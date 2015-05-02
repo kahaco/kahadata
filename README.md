@@ -15,7 +15,7 @@
 # Importing data
 ## Get Data
 
-    wget <kaha-api-data>  > data.json
+   curl <kaha-api-data>  > data.json
 
 
 ## Import the data in sqlite
