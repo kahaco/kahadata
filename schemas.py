@@ -11,7 +11,7 @@ class KahaResourceSchema(Schema):
     contact_name = fields.Str(attribute='contactname')
     created = fields.DateTime()
     updated = fields.DateTime()
-    types = fields.Nested('KahaResourceTypeSchema', many=True, exclude=('resource',))
+    types = fields.Nested('KahaResourceTypeSchema', many=True, only='resource_type')
     stats = fields.Nested('KahaResourceStatSchema', many=True, exclude=('resource',))
 
     def format_contactnumber(self, resource):
