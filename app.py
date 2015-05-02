@@ -1,6 +1,9 @@
 import os
 from flask import Flask, Response, jsonify, request
 from flask.ext.sqlalchemy import SQLAlchemy
+import subprocess
+import markdown2
+import pdb
 
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
@@ -26,7 +29,8 @@ def _get_data(district, resource_types=''):
 
 @app.route("/")
 def hello():
-    return "Visit kaha.co"
+    output = subprocess.check_output("cat Readme.md", shell=True)
+    return markdown2.markdown(output)
 
 @app.route("/resources/<district>")
 def get_resources(district):
