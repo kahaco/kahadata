@@ -13,7 +13,7 @@ def _get_data(district, resource_types=''):
     resource_for = request.args.get('for', None)
     query_filter = models.KahaResource.query
     if (district != 'all'):
-        query_filter = query_filter.filter_by(district=district)
+        query_filter = query_filter.filter(models.KahaResource.district.ilike("%" + district + "%"))
     if (resource_for):
         query_filter = query_filter.filter_by(resource_for=resource_for)
     if resource_types:
@@ -45,4 +45,8 @@ def get_resource(uuid):
         return jsonify((result.data))#; //{'data':result.data})
 if __name__ == "__main__":
     print "Running app"
-    app.run(host='0.0.0.0')
+    _port = 2000
+    if os.environ['APP_SETTINGS'] == 'config.ProductionConfig':
+        _port = 80
+
+    app.run(host='0.0.0.0', port=_port)
