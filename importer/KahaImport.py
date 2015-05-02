@@ -28,6 +28,7 @@ class KahaImport:
 
     def transform_row(self, row):
         resource = models.KahaResource()
+        resource.datasource = u'kaha'
         resource.uuid = row[u'uuid']
         resource.district = row[u'location'][u'district'].lowercase()
         resource.tole = row[u'location'][u'tole'].lowercase()

@@ -73,6 +73,7 @@ class KahaResource(db.Model):
     __table_args__ = (Index('created_kr_idx', 'created'), Index('updated_kr_idx', 'updated'),)
 
     resource_id = Column(Integer, primary_key=True)
+    datasource = Column(String(20))
     uuid = Column(String(50), unique=True)
     resource_for = Column(String(10))
     title = Column(String(500))
