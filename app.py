@@ -11,7 +11,9 @@ import schemas
 
 def _get_data(district, resource_types=''):
     resource_for = request.args.get('for', None)
-    query_filter = models.KahaResource.query.filter_by(district=district)
+    query_filter = models.KahaResource.query
+    if (district != 'all'):
+        query_filter = query_filter.filter_by(district=district)
     if (resource_for):
         query_filter = query_filter.filter_by(resource_for=resource_for)
     if resource_types:
@@ -24,7 +26,7 @@ def _get_data(district, resource_types=''):
 
 @app.route("/")
 def hello():
-    return "Hello World!"
+    return "Visit kaha.co"
 
 @app.route("/resources/<district>")
 def get_resources(district):
