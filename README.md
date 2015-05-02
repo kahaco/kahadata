@@ -1,11 +1,15 @@
 # Project Setup
-## Install dependency
-    pip install -r requirements.txt 
+## Install dependency and setup virtualenv
+    pip install virtualenv
+    
+    cd <kahadata>
+    virtualenv pyenv
+    pyenv/bin/pip install -r requirements.txt 
 
 
 ## Setup db
 
-    APP_SETTINGS="config.DevelopmentConfig" KAYA_SECRET='xx' KAHA_DSN='sqlite:///kaha.sdb' python manager.py db  upgrade
+    APP_SETTINGS="config.DevelopmentConfig" KAYA_SECRET='xx' KAHA_DSN='sqlite:///kaha.sdb' pyenv/bin/python manager.py db  upgrade
 
 
 # Importing data
@@ -16,12 +20,12 @@
 
 ## Import the data in sqlite
     
-    APP_SETTINGS="config.DevelopmentConfig" KAYA_SECRET='xx' KAHA_DSN='sqlite:///kaha.sdb' python dataimport.py
+    APP_SETTINGS="config.DevelopmentConfig" KAYA_SECRET='xx' KAHA_DSN='sqlite:///kaha.sdb' pyenv/bin/python dataimport.py
 
 
 ## Running the api server
 
-    APP_SETTINGS="config.DevelopmentConfig" KAYA_SECRET='xx' KAHA_DSN='sqlite:///kaha.sdb' python app.py
+    APP_SETTINGS="config.DevelopmentConfig" KAYA_SECRET='xx' KAHA_DSN='sqlite:///kaha.sdb' pyenv/bin/python app.py
 
 
 # Using the API 
