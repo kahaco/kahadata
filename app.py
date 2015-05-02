@@ -43,4 +43,4 @@ def get_resource(uuid):
         return jsonify((result.data))#; //{'data':result.data})
 if __name__ == "__main__":
     print "Running app"
-    app.run()
+    app.run(host='0.0.0.0')
