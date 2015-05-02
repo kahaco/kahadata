@@ -8,7 +8,6 @@
 
 
 # Importing data
-
 ## Get Data
 
     wget <kaha-api-data>  > data.json
@@ -17,3 +16,8 @@
 ## Import the data in sqlite
     
     APP_SETTINGS="config.DevelopmentConfig" KAYA_SECRET='xx' KAHA_DSN='sqlite:///kaha.sdb' python dataimport.pu
+
+
+# Running the api server
+
+    APP_SETTINGS="config.DevelopmentConfig" KAYA_SECRET='xx' KAHA_DSN='sqlite:///kaha.sdb' python app.pu
