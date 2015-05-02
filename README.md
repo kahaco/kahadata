@@ -20,7 +20,7 @@
 
 ## Import the data in sqlite
     
-    APP_SETTINGS="config.DevelopmentConfig" KAYA_SECRET='xx' KAHA_DSN='sqlite:///kaha.sdb' pyenv/bin/python dataimport.py
+   sh bin/import.sh kaha
 
 
 ## Running the api server
