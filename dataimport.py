@@ -33,6 +33,12 @@ for d in data:
         r.description = d[u'description'][u'detail']
         r.contactname = d[u'description'][u'contactname']
         r.contactnumber = d[u'description'][u'contactnumber']
+
+        resource_for = u'supply'
+        if 'channel' in d:
+            resource_for = d[u'channel']
+        r.resource_for = resource_for
+
         if 'date' in d:
             r.updated = parser.parse(d[u'date'][u'modified'])
             if d[u'date'][u'created']:

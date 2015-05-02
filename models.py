@@ -74,6 +74,7 @@ class KahaResource(db.Model):
 
     resource_id = Column(Integer, primary_key=True)
     uuid = Column(String(50), unique=True)
+    resource_for = Column(String(10))
     title = Column(String(500))
     district = Column(String(150))
     tole = Column(String(150))

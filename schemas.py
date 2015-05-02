@@ -7,7 +7,8 @@ def must_not_be_blank(data):
 
 class KahaResourceSchema(Schema):
     active  = fields.Boolean(attribute='is_active')
-    contactnumber = fields.Method('format_contactnumber')
+    contact_number = fields.Method('format_contactnumber')
+    contact_name = fields.Str(attribute='contactname')
     created = fields.DateTime()
     updated = fields.DateTime()
     types = fields.Nested('KahaResourceTypeSchema', many=True, exclude=('resource',))
@@ -26,8 +27,8 @@ class KahaResourceSchema(Schema):
                 'district',
                 'tole',
                 'description',
-                'contactname',
-                'contactnumber',
+                'contact_name',
+                'contact_number',
                 'updated',
                 'created',
                 'types',
