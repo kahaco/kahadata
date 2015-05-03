@@ -70,7 +70,11 @@ def to_json(inst, cls):
 
 class KahaResource(db.Model):
     __tablename__ = 'kaharesource'
-    __table_args__ = (Index('created_kr_idx', 'created'), Index('updated_kr_idx', 'updated'),)
+    __table_args__ = (
+            Index('created_kr_idx', 'created'),
+            Index('updated_kr_idx', 'updated'),
+            Index('district_kr_idx', 'district'),
+            )
 
     resource_id = Column(Integer, primary_key=True)
     datasource = Column(String(20))
@@ -97,7 +101,9 @@ class KahaResource(db.Model):
 
 class KahaResourceType(db.Model):
     __tablename__ = 'kaharesource_type'
-
+    __table_args__ = (
+            Index('resource_type_idx', 'resource_type'),
+            )
     id = Column(Integer, primary_key=True)
     resource_type = Column(String(100))
     resource_id = Column(Integer, ForeignKey('kaharesource.resource_id'))
