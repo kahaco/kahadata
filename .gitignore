@@ -1,2 +1,5 @@
 *.pyc
 pyenv
+kaha.sdb
+kaha-dev.sdb
+kaha-prod.sdb
