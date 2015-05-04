@@ -45,3 +45,6 @@
 *NOTE* Return a resource for the uuid
 
 More to come..
+
+## LICENSE
+See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
