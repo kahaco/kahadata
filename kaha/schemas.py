@@ -16,7 +16,9 @@ class KahaResourceSchema(Schema):
 
     def format_contactnumber(self, resource):
         try:
-            return [int(d) for d in re.split('\s|,', resource.contactnumber)]
+            if resource.contactnumber:
+                return [int(d) for d in re.split('\s|,', resource.contactnumber)]
+            return []
         except ValueError:
             return None
 

@@ -4,7 +4,6 @@ class Config(object):
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
-    SECRET_KEY = os.getenv('KAHA_SECRET', 'xxxx')
     SQLALCHEMY_DATABASE_URI = os.getenv('KAHA_DSN', 'xxx')
     SQLALCHEMY_ECHO = True
 

@@ -1,7 +1,7 @@
 import json
 import urllib
 from dateutil import parser
-from app import models
+from kaha import models
 
 class KahaImport:
     """
@@ -25,17 +25,20 @@ class KahaImport:
         file_handler, header = urllib.urlretrieve(kaha_url, 'kaha-data.json')
         with open(file_handler) as data_file:
             self.data = json.load(data_file)
+        return self.data
 
     def transform_row(self, row):
         resource = models.KahaResource()
         resource.datasource = u'kaha'
         resource.uuid = row[u'uuid']
-        resource.district = row[u'location'][u'district'].lowercase()
-        resource.tole = row[u'location'][u'tole'].lowercase()
+        resource.district = row[u'location'][u'district'].lower()
+        resource.tole = row[u'location'][u'tole'].lower()
         resource.title = row[u'description'][u'title']
         resource.description = row[u'description'][u'detail']
-        resource.contactname = row[u'description'][u'contactname']
-        resource.contactnumber = row[u'description'][u'contactnumber']
+        if 'contactname' in row[u'description']:
+            resource.contactname = row[u'description'][u'contactname']
+        if 'contactname' in row[u'description']:
+            resource.contactnumber = row[u'description'][u'contactnumber']
 
         resource_for = u'supply'
         if 'channel' in row:
@@ -43,9 +46,9 @@ class KahaImport:
         resource.resource_for = resource_for
 
         if 'date' in row:
-            resource.updated = parseresource.parse(row[u'date'][u'modified'])
+            resource.updated = parser.parse(row[u'date'][u'modified'])
             if row[u'date'][u'created']:
-                resource.craeted = parseresource.parse(row[u'date'][u'created'])
+                resource.craeted = parser.parse(row[u'date'][u'created'])
 
         resource.types.append(models.KahaResourceType(resource_type=row[u'type']))
         if 'stat' in row:
@@ -55,15 +58,5 @@ class KahaImport:
 
         return resource
 
-    def transform(self, data=None):
-        transformed_data = []
-        if data is None:
-            data = self.data
-
-        for row in data:
-            try:
-                transformed_data.append(self.transform_row(row))
-            except:
-                print "Unable to transform", row
-        return transformed_data
-
+    def find_record(self, row, db):
+        return db.session.query(models.KahaResource).filter_by(uuid=row.uuid).first()

@@ -1,4 +1,3 @@
-from app import db
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, text, ForeignKey,PrimaryKeyConstraint, Index
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -7,6 +6,8 @@ from sqlalchemy.sql.expression import func
 from datetime import datetime
 import json
 from json import JSONDecoder, JSONEncoder
+
+from bootstrap import db
 
 class DateTimeDecoder(JSONDecoder):
  
