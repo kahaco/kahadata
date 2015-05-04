@@ -9,7 +9,7 @@
 
 ## Setup db
 
-    APP_SETTINGS="config.DevelopmentConfig" KAYA_SECRET='xx' KAHA_DSN='sqlite:///kaha.sdb' pyenv/bin/python manager.py db  upgrade
+    APP_SETTINGS="kaha.config.DevelopmentConfig" KAHA_DSN='sqlite:///../kaha.sdb' pyenv/bin/python manager.py db  upgrade
 
 
 # Importing data
@@ -25,7 +25,7 @@
 
 ## Running the api server
 
-    APP_SETTINGS="config.DevelopmentConfig" KAYA_SECRET='xx' KAHA_DSN='sqlite:///kaha.sdb' pyenv/bin/python app.py
+    APP_SETTINGS="kaha.config.DevelopmentConfig" KAHA_DSN='sqlite:///../kaha.sdb' pyenv/bin/python app.py
 
 
 # Using the API 
