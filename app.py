@@ -1,8 +1,10 @@
 import os
+import json
 from kaha.bootstrap import app, db
 from flask import Response, jsonify, request
 from flask.ext.sqlalchemy import SQLAlchemy
 import flask.ext.restful
+from pprint import pprint
 
 import markdown2
 
@@ -12,6 +14,7 @@ from kaha import schemas
 
 def _get_data(district, resource_types=''):
     resource_for = request.args.get('for', None)
+    outformat = request.args.get('format', 'json')
     query_filter = KahaResource.query
     if (district != 'all'):
         query_filter = query_filter.filter(KahaResource.district.ilike("%" + district + "%"))
@@ -23,7 +26,21 @@ def _get_data(district, resource_types=''):
     datalist = query_filter.all()
     serializer = schemas.KahaResourceSchema(many=True)
     result = serializer.dump(datalist)
-    return jsonify({'resources':result.data})
+    if outformat == 'csv':
+        def _csv(x):
+            if isinstance(x, list):
+                return u'%s' % ':'.join(map(str, x))
+            return u'%s' % x
+
+        def generate():
+            for i, row in enumerate(result.data):
+                if i == 0: 
+                    yield '"' + '","'.join(row.keys()) + '"\n'
+                yield '"' + '","'.join(map(_csv, row.values())) + '"\n'
+
+        return Response(generate(), mimetype='text/csv')
+    return json.dumps({'count':query_filter.count(), 'data':result.data})
+    #return jsonify({'resources':result.data})
 
 @app.route("/")
 def hello():
