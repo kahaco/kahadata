@@ -12,7 +12,7 @@ class KahaResourceSchema(Schema):
     created = fields.DateTime()
     updated = fields.DateTime()
     types = fields.Nested('KahaResourceTypeSchema', many=True, only='resource_type')
-    stats = fields.Nested('KahaResourceStatSchema', many=True, exclude=('resource',))
+    props = fields.Nested('KahaResourcePropSchema', many=True, exclude=('resource',))
 
     def format_contactnumber(self, resource):
         try:
@@ -27,14 +27,16 @@ class KahaResourceSchema(Schema):
                 'uuid',
                 'title', 
                 'district',
+                'district_code',
                 'tole',
+                'vdc_code',
                 'description',
                 'contact_name',
                 'contact_number',
                 'updated',
                 'created',
                 'types',
-                'stats'
+                'props'
                 )
 
 class KahaResourceTypeSchema(Schema):
@@ -45,7 +47,7 @@ class KahaResourceTypeSchema(Schema):
                 'resource',
                 )
 
-class KahaResourceStatSchema(Schema):
+class KahaResourcePropSchema(Schema):
     resource = fields.Nested(KahaResourceSchema)
     class Meta:
         fields = (

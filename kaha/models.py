@@ -1,73 +1,34 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, text, ForeignKey,PrimaryKeyConstraint, Index
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, text, ForeignKey, PrimaryKeyConstraint, Index
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import func
 
 from datetime import datetime
-import json
-from json import JSONDecoder, JSONEncoder
 
 from bootstrap import db
 
-class DateTimeDecoder(JSONDecoder):
- 
-    def __init__(self, *args, **kargs):
-        JSONDecoder.__init__(self, object_hook=self.dict_to_object,
-                             *args, **kargs)
-    
-    def dict_to_object(self, d): 
-        if '__type__' not in d:
-            return d
- 
-        type = d.pop('__type__')
-        try:
-            dateobj = datetime(**d)
-            return dateobj
-        except:
-            d['__type__'] = type
-            return d
- 
-class DateTimeEncoder(JSONEncoder):
-    """ Instead of letting the default encoder convert datetime to string,
-        convert datetime objects into a dict, which can be decoded by the
-        DateTimeDecoder
-    """
-        
-    def default(self, obj):
-        if isinstance(obj, datetime):
-            return {
-                '__type__' : 'datetime',
-                'year' : obj.year,
-                'month' : obj.month,
-                'day' : obj.day,
-                'hour' : obj.hour,
-                'minute' : obj.minute,
-                'second' : obj.second,
-                'microsecond' : obj.microsecond,
-            }   
-        else:
-            return JSONEncoder.default(self, obj)
 
-def to_json(inst, cls):
+class KahaDistrict(db.Model):
     """
-    Jsonify the sql alchemy query result.
+    Region": "Eastern Region",
+    District": "Taplejung",
+    District_code": "1",
+    VDC_name": "Ambegudin",
+    VDC_code": "1001"
     """
-    convert = dict()
-    # add your coversions for things like datetime's 
-    # and what-not that aren't serializable.
-    d = dict()
-    for c in cls.__table__.columns:
-        v = getattr(inst, c.name)
-        if c.type in convert.keys() and v is not None:
-            try:
-                d[c.name] = convert[c.type](v)
-            except:
-                d[c.name] = "Error:  Failed to covert using ", str(convert[c.type])
-        elif v is None:
-            d[c.name] = str()
-        else:
-            d[c.name] = v
-    return json.dumps(d, cls=DateTimeEncoder)
+    __tablename__ = 'kaha_location';
+    __table_args__= (
+            Index('district_name_idx', 'district'),
+            Index('district_vdc_idx', 'vdc_name'),
+            )
+    location_id = Column(Integer, primary_key=True, autoincrement=True)
+    region = Column(String(200))
+    district = Column(String(200))
+    district_code = Column(Integer)
+    vdc_name = Column(String(250))
+    vdc_code = Column(Integer(), unique=True)
+    resources = relationship('KahaResource', backref='location')
+
 
 class KahaResource(db.Model):
     __tablename__ = 'kaharesource'
@@ -77,27 +38,37 @@ class KahaResource(db.Model):
             Index('district_kr_idx', 'district'),
             )
 
-    resource_id = Column(Integer, primary_key=True)
-    datasource = Column(String(20))
+    resource_id = Column(Integer, primary_key=True, autoincrement=True)
     uuid = Column(String(50), unique=True)
     resource_for = Column(String(10))
     title = Column(String(500))
     district = Column(String(150))
+    district_code = Column(Integer())
+    vdc_code = Column(Integer())
     tole = Column(String(150))
     contactname = Column(String(200))
     contactnumber = Column(String(100))
     description = Column(String)
     is_active = Column(Integer)
     is_deleted = Column(Integer)
+    location_id = Column(Integer, ForeignKey('kaha_location.location_id'))
     created = Column(DateTime, default=func.now())
     updated = Column(DateTime, onupdate=func.utc_timestamp())
-    types = db.relationship('KahaResourceType', backref='resource',
-                                    lazy='dynamic')
-    stats = relationship("KahaResourceStat", backref="kaharesource", lazy='dynamic')
+    data_source = relationship('KahaResourceSource', backref='resource', lazy='dynamic')
+    props = relationship('KahaResourceProperty', backref='resource', lazy='dynamic')
+    types = relationship('KahaResourceType', backref='resource', lazy='dynamic')
 
-    @property
-    def json(self):
-        return to_json(self, self.__class__)
+
+class KahaResourceSource(db.Model):
+    __tablename__ = 'kaharesource_source'
+    __table_args__ = (
+            Index('resource_source_idx', 'source'),
+            )
+
+    resource_id = Column(Integer, ForeignKey('kaharesource.resource_id'))
+    source_id = Column(String(100), primary_key=True)
+    source = Column(String(20), primary_key=True)
+    source_json = Column(String(500))
 
 
 class KahaResourceType(db.Model):
@@ -105,21 +76,21 @@ class KahaResourceType(db.Model):
     __table_args__ = (
             Index('resource_type_idx', 'resource_type'),
             )
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     resource_type = Column(String(100))
     resource_id = Column(Integer, ForeignKey('kaharesource.resource_id'))
 
-    #resource = relationship("KahaResource", back_populates="types")
 
+class KahaResourceProperty(db.Model):
+    __tablename__ = 'kaharesource_property'
+    __table_args__ = (
+            Index('resource_key_idx', 'key'),
+            Index('created_prop_idx', 'created'),
+            Index('updated_prop_idx', 'updated'),
+            )
 
-class KahaResourceStat(db.Model):
-    __tablename__ = 'kaharesource_stat'
-    __table_args__ = (Index('created_ks_idx', 'created'), Index('updated_ks_idx', 'updated'),)
-
-    key = Column(String(20), primary_key=True)
     resource_id = Column(Integer, ForeignKey('kaharesource.resource_id'), primary_key=True)
-    value = Column(Integer)
+    key = Column(String(50), primary_key=True)
+    value = Column(String(50))
     created = Column(DateTime, default=func.now())
     updated = Column(DateTime, onupdate=func.utc_timestamp())
-
-    #resource = relationship("KahaResource", back_populates="stats")

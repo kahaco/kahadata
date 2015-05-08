@@ -2,6 +2,7 @@ import json
 import urllib
 from dateutil import parser
 from kaha import models
+import uuid
 
 class KahaImport:
     """
@@ -20,19 +21,23 @@ class KahaImport:
     def __init__(self):
         self.data = {}
 
-    def grab_data(self):
-        kaha_url = 'http://kaha.co/api'
-        file_handler, header = urllib.urlretrieve(kaha_url, 'kaha-data.json')
+    def grab_data(self, use_cache=False):
+        if (not use_cache):
+            kaha_url = 'http://kaha.co/api'
+            file_handler, header = urllib.urlretrieve(kaha_url, 'kaha-data.json')
+        else:
+            file_handler = 'kaha-data.json'
+
         with open(file_handler) as data_file:
             self.data = json.load(data_file)
         return self.data
 
     def transform_row(self, row):
         resource = models.KahaResource()
-        resource.datasource = u'kaha'
-        resource.uuid = row[u'uuid']
-        resource.district = row[u'location'][u'district'].lower()
-        resource.tole = row[u'location'][u'tole'].lower()
+        resource.data_source.append(models.KahaResourceSource(source='kaha', source_id=row[u'uuid'], source_json=json.dumps(row)))
+        resource.uuid = str(uuid.uuid4())
+        resource.district = row[u'location'][u'district'].title()
+        resource.tole = row[u'location'][u'tole'].title()
         resource.title = row[u'description'][u'title']
         resource.description = row[u'description'][u'detail']
         if 'contactname' in row[u'description']:
@@ -53,10 +58,10 @@ class KahaImport:
         resource.types.append(models.KahaResourceType(resource_type=row[u'type']))
         if 'stat' in row:
             for _key, _value in row[u'stat'].iteritems():
-                s = models.KahaResourceStat(key=_key,value=_value)
-                resource.stats.append(s)
+                s = models.KahaResourceProperty(key='stat_%s' % _key, value=_value)
+                resource.props.append(s)
 
         return resource
 
     def find_record(self, row, db):
-        return db.session.query(models.KahaResource).filter_by(uuid=row.uuid).first()
+        return db.session.query(models.KahaResourceSource).filter_by(source_id=row[u'uuid'], source='kaha').first()

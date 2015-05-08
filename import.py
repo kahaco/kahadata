@@ -1,5 +1,6 @@
 import argparse
 from kaha.bootstrap import db 
+from kaha.models import KahaDistrict
 
 import sys
 from pprint import pprint
@@ -13,15 +14,25 @@ def run_import(args):
     else:
         raise Exception('Importer not recognized')
 
-    rows = _importer.grab_data()
+    rows = _importer.grab_data(True)
     count = 0
     failed = 0
     for r in rows:
         try:
             count = count + 1
             row = _importer.transform_row(r)
-            pprint(row)
-            if (not _importer.find_record(row, db)):
+
+            if (not _importer.find_record(r, db)):
+                vdc = db.session.query(KahaDistrict).filter_by(vdc_name=row.tole).first()
+                if vdc:
+                    row.district = vdc.district
+                    row.district_code = vdc.district_code
+                    row.vdc_code = vdc.vdc_code
+                else:
+                    district = db.session.query(KahaDistrict).filter_by(district=row.district).first()
+                    if district:
+                        row.district_code = district.district_code
+
                 db.session.add(row)
                 db.session.commit()
             else:

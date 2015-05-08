@@ -8,7 +8,7 @@ from pprint import pprint
 
 import markdown2
 
-from kaha.models import KahaResource, KahaResourceType, KahaResourceStat
+from kaha.models import KahaResource, KahaResourceType, KahaResourceProperty
 
 from kaha import schemas
 

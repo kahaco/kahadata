@@ -3,6 +3,8 @@ from flask.ext.migrate import Migrate, MigrateCommand
 import os
 
 from kaha.bootstrap import app, db
+import kaha.models
+
 app.config.from_object(os.environ['APP_SETTINGS'])
 
 migrate = Migrate(app, db)
