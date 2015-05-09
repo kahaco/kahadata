@@ -6,16 +6,24 @@ import sys
 import uuid
 from pprint import pprint
 
-from importer import KahaImport
+from importer import KahaImport, KLLImport, SparrowImport
+
+known_importers = {
+        'kaha':KahaImport.KahaImport,
+        'kll':KLLImport.KLLImport,
+        'sparrow':SparrowImport.SparrowImport
+        }
 
 def run_import(args):
     _importer = None 
-    if args.source == 'kaha':
-        _importer = KahaImport.KahaImport()
+    if args.source in known_importers:
+        _importer = known_importers[args.source]()
     else:
         raise Exception('Importer not recognized')
 
     rows = _importer.grab_data(True)
+    if not rows:
+        raise Exception("Unable to import anything")
     skipped = 0
     count = 0
     failed = 0
