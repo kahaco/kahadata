@@ -3,6 +3,7 @@ from kaha.bootstrap import db
 from kaha.models import KahaDistrict
 
 import sys
+import uuid
 from pprint import pprint
 
 from importer import KahaImport
@@ -23,6 +24,7 @@ def run_import(args):
             row = _importer.transform_row(r)
 
             if (not _importer.find_record(r, db)):
+                row.uuid = str(uuid.uuid4())
                 vdc = db.session.query(KahaDistrict).filter_by(vdc_name=row.tole).first()
                 if vdc:
                     row.district = vdc.district

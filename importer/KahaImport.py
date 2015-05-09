@@ -2,7 +2,7 @@ import json
 import urllib
 from dateutil import parser
 from kaha import models
-import uuid
+import os
 
 class KahaImport:
     """
@@ -22,20 +22,23 @@ class KahaImport:
         self.data = {}
 
     def grab_data(self, use_cache=False):
-        if (not use_cache):
-            kaha_url = 'http://kaha.co/api'
-            file_handler, header = urllib.urlretrieve(kaha_url, 'kaha-data.json')
-        else:
-            file_handler = 'kaha-data.json'
+        has_cache = False
+        file_name = 'kaha-data.json'
+        if use_cache:
+            if os.path.isfile(file_name):
+                has_cache = True
 
-        with open(file_handler) as data_file:
+        if ((not use_cache) or (not has_cache)):
+            kaha_url = 'http://kaha.co/api'
+            file_handler, header = urllib.urlretrieve(kaha_url, file_name)
+
+        with open(file_name) as data_file:
             self.data = json.load(data_file)
         return self.data
 
     def transform_row(self, row):
         resource = models.KahaResource()
         resource.data_source.append(models.KahaResourceSource(source='kaha', source_id=row[u'uuid'], source_json=json.dumps(row)))
-        resource.uuid = str(uuid.uuid4())
         resource.district = row[u'location'][u'district'].title()
         resource.tole = row[u'location'][u'tole'].title()
         resource.title = row[u'description'][u'title']
