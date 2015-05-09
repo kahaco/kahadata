@@ -23,5 +23,11 @@ class UshahidiImport(object):
 
         return self.data
 
-    def transform_row(self, incident):
-        pprint.pprint(incident) 
+    def transform_row(self, incident_data):
+        pprint.pprint(incident_data) 
+        incident = incident_data[u'incident']
+        custom_fields = incident_data[u'customfields']
+        comments = incident_data[u'comments']
+        media = incident_data[u'media']  
+        categories = incident_data[u'categories']
+
