@@ -16,11 +16,11 @@ def run_import(args):
         raise Exception('Importer not recognized')
 
     rows = _importer.grab_data(True)
+    skipped = 0
     count = 0
     failed = 0
     for r in rows:
         try:
-            count = count + 1
             row = _importer.transform_row(r)
 
             if (not _importer.find_record(r, db)):
@@ -37,14 +37,16 @@ def run_import(args):
 
                 db.session.add(row)
                 db.session.commit()
+                count = count + 1
             else:
+                skipped = skipped + 1
                 print "\nRecord exists"
         except:
             failed = failed + 1
             db.session.rollback()
             print "Unexpected error:", sys.exc_info()[0]
             raise
-    print "\nImported: %s\nFailed to import: %s" % (count, failed)
+    print "\nImported: %s\nSkipped: %s\nFailed to import: %s" % (count, skipped, failed)
 
 
 if __name__ == '__main__':

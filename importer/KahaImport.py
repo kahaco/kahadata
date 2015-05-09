@@ -36,10 +36,18 @@ class KahaImport:
             self.data = json.load(data_file)
         return self.data
 
+    def fixDitrict(self, district):
+        corrected = district
+        if district == u'Sindhupalchok':
+            corrected = 'Sindhupalchowk'
+        elif district == u'Kavrepalanchok':
+            corrected = 'Kavre'
+        return corrected
+
     def transform_row(self, row):
         resource = models.KahaResource()
         resource.data_source.append(models.KahaResourceSource(source='kaha', source_id=row[u'uuid'], source_json=json.dumps(row)))
-        resource.district = row[u'location'][u'district'].title()
+        resource.district = self.fixDitrict(row[u'location'][u'district'].title())
         resource.tole = row[u'location'][u'tole'].title()
         resource.title = row[u'description'][u'title']
         resource.description = row[u'description'][u'detail']
