@@ -18,8 +18,9 @@ class KahaImport:
     }
     """
 
-    def __init__(self):
+    def __init__(self, options={}):
         self.data = {}
+        self.options = options
 
     def grab_data(self, use_cache=False):
         has_cache = False

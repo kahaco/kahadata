@@ -5,8 +5,9 @@ import pprint
 
 class UshahidiImport(object):
 
-    def __init__(self):
+    def __init__(self, options={}):
         self.data = {}
+        self.options = options;
 
     def _grab_data(self, data_url, file_name, use_cache=False):
         has_cache = False

@@ -1,4 +1,5 @@
 import argparse
+import json
 from kaha.bootstrap import db 
 from kaha.models import KahaDistrict
 
@@ -17,7 +18,7 @@ known_importers = {
 def run_import(args):
     _importer = None 
     if args.source in known_importers:
-        _importer = known_importers[args.source]()
+        _importer = known_importers[args.source](args.options)
     else:
         raise Exception('Importer not recognized')
 
@@ -60,6 +61,7 @@ def run_import(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Import data to Kaha')
     parser.add_argument('--s', dest='source', metavar='source', help='specify your data source')
+    parser.add_argument('--options', dest='options', type=json.loads, default={})
 
     args = parser.parse_args()
     print args.source

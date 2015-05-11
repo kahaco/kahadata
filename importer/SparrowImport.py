@@ -1,4 +1,5 @@
 import UshahidiImport
+import hashlib
 
 class SparrowImport(UshahidiImport.UshahidiImport):
     """
@@ -20,7 +21,16 @@ class SparrowImport(UshahidiImport.UshahidiImport):
     """
 
     def grab_data(self, use_cache=False):
-        return self._grab_data('http://help.sparrowsms.com/api?task=incidents', 'sparrowsms-data.json', use_cache)
+        url = 'http://help.sparrowsms.com/api?task=incidents'
+        if u'category_id' in self.options:
+            url = '%s&by=catid&id=%s' % (url, self.options[u'category_id'])
+
+        if u'limit' in self.options:
+            url = '%s&limit=%s' % (url, self.options[u'limit'])
+
+        url_hash = hashlib.sha224(url).hexdigest()
+        print url
+        return self._grab_data(url, 'sparrowsms-data-%s.json' % (url_hash), use_cache)
 
 
     def parse_categories(self, categories):
